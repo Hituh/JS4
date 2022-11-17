@@ -195,15 +195,15 @@ class Zamowienie {
         }
         try {
             this.#sklep.getProduct(id)
-            this.#magazyn.getProduct(id)
-            this.#iloscprodoktow[id] ??= 0
-            var temp = this.#iloscprodoktow[id] + ilosc
-            this.#magazyn.sprawdzIlosc(id, temp)
-            if (this.#iloscprodoktow[id] != 0) {
-                console.log(`Zmieniono ilość produktu o id: ${id}, z ${this.#iloscprodoktow[id]} na ${temp} w zamówieniu`)
-            }
-            else console.log(`Dodano produkt o id: ${id} i ilości ${ilosc} do zamówienia`)
-            this.#iloscprodoktow[id] = temp
+                this.#magazyn.getProduct(id)
+                    this.#iloscprodoktow[id] ??= 0
+                    var temp = this.#iloscprodoktow[id] + ilosc
+                    this.#magazyn.sprawdzIlosc(id, temp)
+                    if (this.#iloscprodoktow[id] != 0) {
+                        console.log(`Zmieniono ilość produktu o id: ${id}, z ${this.#iloscprodoktow[id]} na ${temp} w zamówieniu`)
+                    }
+                    else console.log(`Dodano produkt o id: ${id} i ilości ${ilosc} do zamówienia`)
+                    this.#iloscprodoktow[id] = temp
         } catch (e) {
             console.log(e.message)
         }
