@@ -35,16 +35,16 @@ class Produkt {
 
 class ListaTowarow {
     #produkty = {}
-    sprawdzProdukt(id) {
-        if(this.#produkty[id] === 'undefined') {  
-            console.log("test")
-            return false
-        }
-        else {
-            console.log("true")
-            return true
-        }
-    }
+    // sprawdzProdukt(id) {
+    //     if(this.#produkty[id] === 'undefined') {  
+    //         console.log("test")
+    //         return false
+    //     }
+    //     else {
+    //         console.log("true")
+    //         return true
+    //     }
+    // }
     wypiszProdukt(id) {
         console.log(this.#produkty[id])
     }
@@ -55,7 +55,7 @@ class ListaTowarow {
     }
     dodajProdukt(produkt) {
         if (produkt.id in this.#produkty) {
-            throw new Error(`Produkt: ${produkt.id} jest już na liście`)
+            throw new Error(`Produkt o id: ${produkt.id} jest już na liście`)
         }
         else {
             this.#produkty[produkt.id] = produkt
@@ -63,7 +63,7 @@ class ListaTowarow {
     }
     zmienProdukt(idProduktu, produkt) {
         if (!(idProduktu in this.#produkty)) {
-            throw new Error(`Produkt o id: ${idProduktu} nie istnieje`)
+            throw new Error(`Produkt o id: ${id} nie jest dostępny`)
         }
 
         for (const [key, value] of Object.entries(produkt)) {
@@ -72,7 +72,7 @@ class ListaTowarow {
     }
     getProduct(id) {
         if (!(id in this.#produkty)) {
-            throw new Error(`Produkt o id: ${id} nie istnieje`)
+            throw new Error(`Produkt o id: ${id} nie jest dostępny`)
         }
         else {
             return this.#produkty[id]
@@ -82,7 +82,8 @@ class ListaTowarow {
         var idProduktu
         for (const id in this.#produkty) {
             if (this.#produkty[id].nazwa === nazwa)
-                idProduktu = this.#produkty[id].id
+                if (this.#produkty[id].model === model)
+                    idProduktu = this.#produkty[id].id
         }
         return idProduktu
     }
@@ -92,10 +93,11 @@ class Magazyn extends ListaTowarow {
     #iloscprodoktow = {}
 
     wypiszProdukt(id) {
-        console.log(`Ilosc prodoktow o id ${id} = ${this.#iloscprodoktow[id]}`)
+        console.log(`Id: ${id} = ${this.#iloscprodoktow[id]}`)
     }
 
     wypiszWszystkieProdukty() {
+        console.log('\nIlość produktów w magazynie: ')
         for (const id in this.#iloscprodoktow) {
             this.wypiszProdukt(id)
         }
@@ -119,12 +121,20 @@ class Magazyn extends ListaTowarow {
             var id = super.getId(arguments[0], arguments[1])
         const produkt = this.getProduct(id)
         if (this.#iloscprodoktow[id] === 0) {
-            throw new Error(`Produkt o id: ${id} nie istnieje`)
+            throw new Error(`Produkt o id: ${id} nie jest dostępny`)
         }
         else {
             this.#iloscprodoktow[id] -= 1
         }
         return produkt
+    }
+
+    sprawdzIlosc() {
+        if (arguments.length === 1)
+            return this.#iloscprodoktow[arguments[0]]
+        if (this.#iloscprodoktow[arguments[0]] < arguments[1]) {
+            throw new Error(`Produkt o id: ${arguments[0]} nie jest dostępny w magazynie w ilości ${arguments[1]}`)
+        }
     }
 }
 
@@ -145,7 +155,9 @@ class Magazyn extends ListaTowarow {
 class Sklep extends ListaTowarow {
     dodajProdukt(...args) {
         if (args.length === 4) {
-            return this.dodajProdukt((new Date().valueOf()), ...args);
+            const [nazwa, model, cena, energia] = args
+            const produkt = new Produkt(new Date().valueOf(), nazwa, model, new Date(), cena, energia)
+            return super.dodajProdukt(produkt)
         }
         if (args.length === 5) {
             const [id, nazwa, model, cena, energia] = args
@@ -155,21 +167,81 @@ class Sklep extends ListaTowarow {
         throw new Error('Nieprawiłowa ilość argumentów')
     }
     wypiszProdukty() {
+        console.log('\nLista Produktów w sklepie: ')
         return super.wypiszWszystkieProdukty()
     }
 }
 
-var Produkt1 = new Produkt(0, "nazwa1", "model1", '1990-03-02', 2000, 200)
-var Produkt2 = new Produkt(1, "nazwa2", "model2", '1992-03-02', 20300, 2003)
-var Produkt3 = new Produkt(2, "nazwa3", "model3", '1942-03-02', 200, 2)
+class Zamowienie {
+    #sklep = null
+    #magazyn = null
+    #iloscprodoktow = {}
+    constructor(sklep, magazyn) {
+        this.#sklep = sklep
+        this.#magazyn = magazyn
+    }
+
+    dodajProdukt() {
+        if (arguments.length === 1) {
+            var id = arguments[0]
+            var ilosc = 1
+
+        }
+
+        if (arguments.length > 1) {
+            var id = arguments[0]
+            var ilosc = arguments[1]
+
+        }
+        try {
+            this.#sklep.getProduct(id)
+            this.#magazyn.getProduct(id)
+            this.#iloscprodoktow[id] ??= 0
+            var temp = this.#iloscprodoktow[id] + ilosc
+            this.#magazyn.sprawdzIlosc(id, temp)
+            if (this.#iloscprodoktow[id] != 0) {
+                console.log(`Zmieniono ilość produktu o id: ${id}, z ${this.#iloscprodoktow[id]} na ${temp} w zamówieniu`)
+            }
+            else console.log(`Dodano produkt o id: ${id} i ilości ${ilosc} do zamówienia`)
+            this.#iloscprodoktow[id] = temp
+        } catch (e) {
+            console.log(e.message)
+        }
+    }
+    zlozZamowienie() {
+        console.log(`\nZłożono zamówienie dla:`)
+        for (const [id, ilosc] of Object.entries(this.#iloscprodoktow)) {
+            console.log(`Produktu o id: ${id} w ilości ${ilosc}\n`)
+            for (var i = 0; i < ilosc; i++) {
+                this.#magazyn.zabierzProdukt(id)
+            }
+        }
+    }
+}
+
+var Produkt1 = new Produkt(0, "nazwa1", "model1", (new Date()), 2000, 200)
+var Produkt2 = new Produkt(1, "nazwa2", "model2", (new Date()), 20300, 2003)
+var Produkt3 = new Produkt(2, "nazwa3", "model3", (new Date()), 200, 2)
 
 var sklep = new Sklep()
 var magazyn = new Magazyn()
+
 magazyn.dodajProdukt(Produkt1, 2)
 magazyn.dodajProdukt(Produkt2, 17)
-magazyn.zabierzProdukt(0)
-magazyn.zabierzProdukt("nazwa1", "model1")
+magazyn.dodajProdukt(Produkt3, 3)
 magazyn.wypiszWszystkieProdukty()
+
 sklep.dodajProdukt('nazwa5', 'model5', 333, 11)
 sklep.dodajProdukt(2, 'nazwa4', 'model4', 2020, 100)
 sklep.wypiszProdukty()
+var zamowienie = new Zamowienie(sklep, magazyn)
+
+console.log(`\nTest zamówień`)
+zamowienie.dodajProdukt(2, 4)
+zamowienie.dodajProdukt(1, 3)
+zamowienie.dodajProdukt(2, 2)
+zamowienie.dodajProdukt(2)
+zamowienie.dodajProdukt(2, 3)
+zamowienie.dodajProdukt(1, 3)
+
+zamowienie.zlozZamowienie()
