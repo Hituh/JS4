@@ -207,7 +207,7 @@ class Zamowienie {
     zlozZamowienie() {
         console.log(`\nZłożono zamówienie dla:`)
         for (const [id, ilosc] of Object.entries(this.#iloscprodoktow)) {
-            console.log(`Produktu o id: ${id} w ilości ${ilosc}\n`)
+            console.log(`Produktu o id: ${id} w ilości ${ilosc}`)
             for (var i = 0; i < ilosc; i++) {
                 this.#magazyn.zabierzProdukt(id)
             }
@@ -234,7 +234,8 @@ magazyn.dodajProdukt(produkt3, 3)
 magazyn.wypiszWszystkieProdukty()
 
 sklep.dodajProdukt('nazwa5', 'model5', 333, 11)
-sklep.dodajProdukt(2, 'nazwa4', 'model4', 2020, 100)
+sklep.dodajProdukt(1, 'nazwa1', 'model1', 20, 10)
+sklep.dodajProdukt(2, 'nazwa2', 'model2', 2020, 100)
 sklep.wypiszProdukty()
 var zamowienie = new Zamowienie(sklep, magazyn)
 
@@ -244,6 +245,6 @@ zamowienie.dodajProdukt(1, 3)
 zamowienie.dodajProdukt(2, 2)
 zamowienie.dodajProdukt(2)
 zamowienie.dodajProdukt(2, 3)
-zamowienie.dodajProdukt(1, 3)
+zamowienie.dodajProdukt(1, 11)
 
 zamowienie.zlozZamowienie()
