@@ -6,8 +6,8 @@ function koszt() {
 
 class Produkt {
     #intl = new Intl.RelativeTimeFormat('pl')
-    constructor(id, nazwa, model, rok_produkcji, cena, energia) {
-        for (const [key, value] of Object.entries({ id, nazwa, model, rok_produkcji, cena, energia })) {
+    constructor(id, nazwa, model, rok_produkcji, cena, zuzycie_energii) {
+        for (const [key, value] of Object.entries({ id, nazwa, model, rok_produkcji, cena, zuzycie_energii})) {
             this[key] = value
         }
         this.rok_produkcji = new Date(this.rok_produkcji)
@@ -17,7 +17,7 @@ class Produkt {
         return this.cena
     }
     kosztEnergii() {
-        return this.energia * cena_energii
+        return this.zuzycie_energii * cena_energii
     }
     wiekProduktu() {
         return new Date().getFullYear() - this.rok_produkcji.getFullYear()
@@ -28,10 +28,6 @@ class Produkt {
 }
 
 
-// console.log("Wszystkie produkty: ")
-// console.log("Produkt 1: " + Produkt1.koszt() + " " + Produkt1.kosztEnergii() + " " + Produkt1.wiekProduktu() + " " + Produkt1.wiekProduktuLata())
-// console.log("Produkt 2: " + Produkt2.koszt() + " " + Produkt2.kosztEnergii() + " " + Produkt2.wiekProduktu() + " " + Produkt2.wiekProduktuLata())
-// console.log("Produkt 3: " + Produkt3.koszt() + " " + Produkt3.kosztEnergii() + " " + Produkt3.wiekProduktu() + " " + Produkt3.wiekProduktuLata())
 
 class ListaTowarow {
     #produkty = {}
@@ -219,16 +215,22 @@ class Zamowienie {
     }
 }
 
-var Produkt1 = new Produkt(0, "nazwa1", "model1", (new Date()), 2000, 200)
-var Produkt2 = new Produkt(1, "nazwa2", "model2", (new Date()), 20300, 2003)
-var Produkt3 = new Produkt(2, "nazwa3", "model3", (new Date()), 200, 2)
+var produkt1 = new Produkt(0, "nazwa1", "model1", (new Date()), 2000, 200)
+var produkt2 = new Produkt(1, "nazwa2", "model2", (new Date()), 20300, 2003)
+var produkt3 = new Produkt(2, "nazwa3", "model3", '1970-10-10', 200, 2)
+
+console.log("Wszystkie produkty: ")
+console.log("Produkt 1: koszt - " + produkt1.koszt() + " kosztEnergii - " + produkt1.kosztEnergii() + " wiekProduktu - " + produkt1.wiekProduktuLata())
+console.log("Produkt 2: koszt - " + produkt2.koszt() + " kosztEnergii - " + produkt2.kosztEnergii() + " wiekProduktu - " + produkt2.wiekProduktuLata())
+console.log("Produkt 3: koszt - " + produkt3.koszt() + " kosztEnergii - " + produkt3.kosztEnergii() + " wiekProduktu - " + produkt3.wiekProduktuLata())
+
 
 var sklep = new Sklep()
 var magazyn = new Magazyn()
 
-magazyn.dodajProdukt(Produkt1, 2)
-magazyn.dodajProdukt(Produkt2, 17)
-magazyn.dodajProdukt(Produkt3, 3)
+magazyn.dodajProdukt(produkt1, 2)
+magazyn.dodajProdukt(produkt2, 17)
+magazyn.dodajProdukt(produkt3, 3)
 magazyn.wypiszWszystkieProdukty()
 
 sklep.dodajProdukt('nazwa5', 'model5', 333, 11)
